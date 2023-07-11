@@ -8,14 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var list: [Int] = Array(stride(from: 1, to: 30, by: 1))
+    @State var isRedacted = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            List {
+                ForEach(list, id: \.self) { item in
+                    HStack(spacing: 16) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.title)
+                        Text("Item \(item)")
+                            .fontWeight(.bold)
+                    }
+                    .padding()
+                    .redacted(reason: isRedacted ? .placeholder : [])
+                }
+                .onDelete(perform: onDelete(_:))
+                
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Button") {
+                        isRedacted.toggle()
+                    }
+                }
         }
-        .padding()
+        }
+    }
+    
+    func onDelete(_ offsets: IndexSet) {
+        if !isRedacted {
+            list.remove(atOffsets: offsets)
+        }
     }
 }
 
